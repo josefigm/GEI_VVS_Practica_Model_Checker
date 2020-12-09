@@ -1,0 +1,237 @@
+Autor: José Antonio Figueiras Martínez
+
+
+
+*********************************************************
+*                                                       *
+*                       Algoritmo 1                     *
+*                                                       *                                                
+*********************************************************
+
+Se realiza la ejecución del algoritmo 1, siendo N (número de filósofos) igual
+a 5 con el comando spin algoritmo1.pml.
+
+Se obtiene la siguiente salida:
+
+
+********************************SALIDA_CONSOLA_1*********************************
+      0 is thinking
+          1 is thinking
+                      4 is thinking
+                  3 is thinking
+              2 is thinking
+      0 is eating
+      0 is thinking
+                      4 is eating
+                      4 is thinking
+      0 is eating
+                  3 is eating
+      0 is thinking
+                  3 is thinking
+              2 is eating
+                      4 is eating
+      0 is eating
+      0 is thinking
+                      4 is thinking
+      0 is eating
+              2 is thinking
+          1 is eating
+                  3 is eating       
+                      4 is eating
+      0 is thinking
+                  3 is thinking
+          1 is thinking
+              2 is eating
+                      4 is thinking
+              2 is thinking
+          1 is eating
+          1 is thinking
+      0 is eating
+      0 is thinking
+                      4 is eating
+                      4 is thinking
+      0 is eating
+      0 is thinking
+                  3 is eating
+                      4 is eating
+                  3 is thinking
+              2 is eating
+                      4 is thinking
+              2 is thinking
+      0 is eating
+          1 is eating
+      0 is thinking
+          1 is thinking
+                      4 is eating
+          1 is eating
+      0 is eating
+          1 is thinking
+                  3 is eating
+                      4 is thinking
+      0 is thinking
+                  3 is thinking
+          1 is eating
+              2 is eating
+                      4 is eating
+              2 is thinking
+          1 is thinking
+                  3 is eating
+                  3 is thinking
+                      4 is thinking
+      0 is eating
+                      4 is eating
+              2 is eating
+              2 is thinking
+      0 is thinking
+              2 is eating
+          1 is eating
+      0 is eating
+              2 is thinking
+      0 is thinking
+                  3 is eating
+                      4 is thinking
+          1 is thinking
+              2 is eating
+      0 is eating
+                  3 is thinking
+                      4 is eating
+                      4 is thinking
+              2 is thinking
+      0 is thinking
+          1 is eating
+      0 is eating
+              2 is eating
+          1 is thinking
+      0 is thinking
+              2 is thinking
+          1 is eating
+                      4 is eating
+      0 is eating
+          1 is thinking
+      0 is thinking
+              2 is eating
+                      4 is thinking
+                  3 is eating
+          1 is eating
+              2 is thinking
+                  3 is thinking
+              2 is eating
+          1 is thinking
+      0 is eating
+      0 is thinking
+              2 is thinking
+                      4 is eating
+      0 is eating
+              2 is eating
+                  3 is eating
+                      4 is thinking
+      0 is thinking
+          1 is eating
+              2 is thinking
+          1 is thinking
+      0 is eating
+                  3 is thinking
+      0 is thinking
+      timeout
+#processes: 5
+                onTable[0] = 0
+                onTable[1] = 0
+                onTable[2] = 0
+                onTable[3] = 0
+                onTable[4] = 0
+519:    proc  4 (philosopher:1) algoritmo1.pml:15 (state 7)
+519:    proc  3 (philosopher:1) algoritmo1.pml:15 (state 7)
+519:    proc  2 (philosopher:1) algoritmo1.pml:15 (state 7)
+519:    proc  1 (philosopher:1) algoritmo1.pml:15 (state 7)
+519:    proc  0 (philosopher:1) algoritmo1.pml:15 (state 7)
+********************************SALIDA_CONSOLA_1*********************************
+
+
+**********************************DEADLOCK*************************************
+
+Si se observa el final de la salida, se ve que Spin genera un timeout. 
+Spin genera un timeout cuando todos los procesos carecen de una 
+siguiente instrucción a ejecutar, es decir, están esperando a que una condición
+se cumpla para poder continuar. Si ningún proceso puede hacer que esta
+condición se cumpla, Spin lo detecta y genera un timeout. En concreto,
+nuestros procesos son los filósofos, y la condición por la que pueden
+esperar es que alguno de los tenedores que necesiten esté en la mesa.
+El hecho de que se genere un timeout indica que todos los filósofos
+están esperando a que el tenedor que necesitan se libere. Por ello, se
+observa que hay un abrazo mortal o deadlock.
+
+Para verificarlo, se realiza una búsqueda de interbloqueos ejecutando
+el comando spin -search algoritmo1.pml. Al hacerlo, se genera un archivo
+algoritmo1.pml.trail, lo que indica que hay presencia de deadlock o algún
+incumplimiento de aserciónes. Para ejecutar este archivo, se lanza el comando
+spin -t -p -l algoritmo1.pml (-t para que realice una simulación guiada, 
+-p para que muestre en cada paso de la simulación que proceso cambia de estado
+y que linea se ejecutó y por último -l para que, en combinación con -p, 
+muestre el valor de las variables locales.)
+
+Con la ejecución del fichero trail se ve más nítidamente que sucede interbloqueo.
+
+Como se comentó anteriormente, todos los filósofos filósofos tendrán que intentar
+reservar el tenedor de la derecha, pero como onTable tiene el valor 0 para todos
+los tenedores, nunca podrán reservar dicho tenedor, y por tanto se está ante una 
+situación en la que ninguno de los filósofos podrá continuar su ejecución, es decir,
+interbloqueo
+
+*********************************FIN_DEADLOCK**********************************
+
+*******************************MUTUAL_EXCLUSION********************************
+
+Para verificar la exclusión se usará una fórmula LTL de seguridad, es decir, una fórmula
+que si se cumple verifica que el programa está bien. En este caso al querer
+comprobar que no puede ser que dos filósofos coman al mismo tiempo, la 
+fórmula LTL de seguridad sería la siguiente: []!(P@cs && Q@cs), en donde
+P y Q son filósofos y cs es una etiqueta que referencia a la linea 38 del
+algoritmo 1. Se leeria como: "Siempre se debe de cumplir que P y Q no ejecutan
+al mismo tiempo la linea etiquetada con cs".
+
+Ahora, para poder verificarlo, se debe de adaptar el código para que se creen solo
+dos filósofos P y Q (con 2 basta). (codigo algoritmo1_mutual_exclusion.pml)
+
+Spin necesitará una never claim, es decir, una condición que especifique un comportamiento 
+imposible.
+
+Al negar nuestra fórmula de seguridad nos queda lo siguiente:
+
+- ![] equivale a <>
+- !!(P@cs && Q@cs) equivale a (P@cs && Q@cs)
+
+El resultado es igual a: <>(P@cs && Q@cs). Este se leeria como "Con el tiempo se cumple que P y Q
+ejecutan la linea etiquetada con cs" y, efectivamente, esto es un comportamiento
+imposible.
+
+Se lanza el comando spin -a -f '<>(P@cs && Q@cs)' algoritmo1_mutual_exclusion.pml
+gcc -o pan -DSAFETY pan.c
+./pan -E (-E para evitar ver errores relacionados con deadlock)
+
+Al ejecutar pan, se observa que la condicion LTL se viola y que por tanto existe un estado
+dentro de arbol que genera spin en donde P y Q están ejecutando la linea etiquetada con cs.
+Ademas, genera el fichero de trail, en donde se podrá ver con detalle el contraejemplo:
+
+Para verlo, basta con ejecutar spin -t -p algoritmo1_mutual_exclusion.pml
+
+101:    proc  1 (Q:1) algoritmo1_mutual_exclusion.pml:49 (state 8)
+101:    proc  0 (P:1) algoritmo1_mutual_exclusion.pml:35 (state 8)
+
+En el paso 101 el fichero trail muestra como ambos procesos están en la 
+linea etiquetada con cs.
+
+
+
+
+Para buscar 
+
+***************************FIN_MUTUAL_EXCLUSION********************************
+
+***************************ABSENSE_OF_STARVATION********************************
+
+Por último, el hecho de que haya la presencia de un deadlock significa
+que los filósofos no podrán comer cuanto quieran, pues estarán esperando
+infinitamente por su tenedor. Es por ello que se puede afirmar que este
+código tiene el problema de la inanición o starvation.
+
+***********************FIN_ABSENSE_OF_STARVATION********************************

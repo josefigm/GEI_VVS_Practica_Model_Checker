@@ -1,5 +1,5 @@
 // Numero de tenedores
-#define N 4
+#define N 2
 
 // Definicion de constantes LEFT e RIGHT
 #define LEFT _pid 
@@ -13,11 +13,8 @@ bool onTable[N]=1;
 // un wait
 inline pick_fork(tenedor)
 {
-    atomic
-    {
         onTable[tenedor] != 0;
         onTable[tenedor] = 0;
-    }
 }
 
 
@@ -28,22 +25,30 @@ inline leave_fork(tenedor)
     onTable[tenedor] = 1;
 }
 
-active[N] proctype philosopher()
+active proctype P()
 {
     do
     ::  printf("%d is thinking\n", _pid);
-      pick_fork(LEFT);
-      pick_fork(RIGHT);
+        pick_fork(LEFT);
+        pick_fork(RIGHT);
 
   cs: printf("%d is eating\n", _pid);
 
       leave_fork(RIGHT);
       leave_fork(LEFT)
-  od
+    od
 }
 
-init
+active proctype Q()
 {
-    run philosopher();
+    do
+    ::  printf("%d is thinking\n", _pid);
+        pick_fork(LEFT);
+        pick_fork(RIGHT);
 
+  cs: printf("%d is eating\n", _pid);
+
+      leave_fork(RIGHT);
+      leave_fork(LEFT)
+    od
 }
