@@ -1,0 +1,67 @@
+Autor: José Antonio Figueiras Martínez
+
+
+
+*********************************************************
+*                                                       *
+*                       Algoritmo 2                     *
+*                                                       *                                                
+*********************************************************
+
+Se realiza la ejecución del algoritmo 2, siendo N (número de filósofos) igual
+a 5 con el comando spin algoritmo2.pml.
+
+
+**********************************DEADLOCK*************************************
+
+Aun que se indica que no hay interbloqueos, se realiza una búsqueda de interbloqueos ejecutando
+el comando spin -search algoritmo2.pml. 
+
+Ni con la profundidad por defecto (10000 pasos) ni con la máxima soportada por la CPU
+se encuentran errores. (se probó con -m1000000)
+
+*********************************FIN_DEADLOCK**********************************
+
+
+*******************************MUTUAL_EXCLUSION********************************
+
+
+Al igual que con el algoritmo 1, se usa una fórmula LTL de seguridad. La 
+fórmula LTL de seguridad sería la misma: []!(P@cs && Q@cs), en donde
+P y Q son filósofos y cs es una etiqueta que referencia a la linea que nos interesa comprobar.
+
+Ahora, para poder verificarlo, se debe de adaptar el código para que se creen solo
+dos filósofos P y Q (con 2 basta). (codigo algoritmo2_mutual_exclusion.pml)
+
+Spin vuelve a necesitar una never claim, es decir, una condición que especifique un comportamiento 
+imposible.
+
+Al negar nuestra fórmula de seguridad nos queda lo siguiente:
+
+- ![] equivale a <>
+- !!(P@cs && Q@cs) equivale a (P@cs && Q@cs)
+
+El resultado es igual a: <>(P@cs && Q@cs).
+
+Se lanza el comando spin -a -f '<>(P@cs && Q@cs)' algoritmo2_mutual_exclusion.pml
+gcc -o pan -DSAFETY pan.c
+./pan -E (-E para evitar ver errores relacionados con deadlock)
+
+Al ejecutar pan, se observa que la condicion LTL se viola y que por tanto existe un estado
+dentro de arbol que genera spin en donde P y Q están ejecutando la linea etiquetada con cs.
+Ademas, genera el fichero de trail, en donde se podrá ver con detalle el contraejemplo:
+
+Para verlo, basta con ejecutar spin -t -p algoritmo2_mutual_exclusion.pml
+
+69:    proc  1 (Q:1) algoritmo2_mutual_exclusion.pml:60 (state 8)
+69:    proc  0 (P:1) algoritmo2_mutual_exclusion.pml:41 (state 8)
+
+En el paso 69 el fichero trail muestra como ambos procesos están en la 
+linea etiquetada con cs.
+
+
+***************************FIN_MUTUAL_EXCLUSION********************************
+
+***************************ABSENSE_OF_STARVATION********************************
+
+***********************FIN_ABSENSE_OF_STARVATION********************************

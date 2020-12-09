@@ -220,11 +220,6 @@ Para verlo, basta con ejecutar spin -t -p algoritmo1_mutual_exclusion.pml
 En el paso 101 el fichero trail muestra como ambos procesos están en la 
 linea etiquetada con cs.
 
-
-
-
-Para buscar 
-
 ***************************FIN_MUTUAL_EXCLUSION********************************
 
 ***************************ABSENSE_OF_STARVATION********************************
