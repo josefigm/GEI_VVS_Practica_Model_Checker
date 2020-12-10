@@ -43,7 +43,7 @@ El resultado es igual a: <>(P@cs && Q@cs).
 
 Se lanza el comando spin -a -f '<>(philosopher[0]@cs && philosopher[1]@cs)' -m70000 algoritmo2.pml
 gcc -o pan -DSAFETY pan.c
-./pan -E (-E para evitar ver errores relacionados con deadlock)
+./pan -E -m70000 (-E para evitar ver errores relacionados con deadlock)
 
 Al ejecutar pan, se observa que la condicion LTL se viola y que por tanto existe un estado
 dentro de arbol que genera spin en donde philosopher[0] y philosopher[1] están ejecutando 
@@ -54,21 +54,52 @@ Para verlo, basta con ejecutar spin -t -p algoritmo2.pml
 
 Al final de la simulación guiada, se imprime por consola lo siguiente:
 
-9999:   proc  4 (philosopher:1) algoritmo2.pml:17 (state 3)
-9999:   proc  3 (philosopher:1) algoritmo2.pml:17 (state 3)
-9999:   proc  2 (philosopher:1) algoritmo2.pml:15 (state 4)
-9999:   proc  1 (philosopher:1) algoritmo2.pml:41 (state 8)
-9999:   proc  0 (philosopher:1) algoritmo2.pml:41 (state 8)
+16987:  proc  4 (philosopher:1) algoritmo2.pml:41 (state 8)
+16987:  proc  3 (philosopher:1) algoritmo2.pml:15 (state 7)
+16987:  proc  2 (philosopher:1) algoritmo2.pml:15 (state 7)
+16987:  proc  1 (philosopher:1) algoritmo2.pml:41 (state 8)
+16987:  proc  0 (philosopher:1) algoritmo2.pml:41 (state 8)
 
-En el paso 9999 el fichero trail muestra como efectivamente el philosopher[0](proc 0)
+En el paso 16987 el fichero trail muestra como efectivamente el philosopher[0](proc 0)
 y el philosopher[1](proc 1) están ejecutando la linea 41 del algoritmo2, que se corres-
-ponde con la linea etiquetada con cs. Por tanto, se incumple la exclusión mutua.
+ponde con la linea etiquetada con cs. Inclusive el filósofo que corresponde a proc 4
+también estña ejecutando dicha linea. Por tanto, se incumple la exclusión mutua.
 
 
 ***************************FIN_MUTUAL_EXCLUSION********************************
 
 ***************************ABSENSE_OF_STARVATION********************************
 
+En este caso, no se puede dar por sentado que hai inanición, pues el algoritmo2
+no presenta deadlocks.
 
+Para verificarlo, se debe de obtener un model checker que utilice una never claim
+que permita comprobar la ausencia de inanición. Para realizarlo, basta con comprobarlo
+para un filósofo. En este caso, se realizará con philosopher[0].
+
+La fórmula de seguridad sería: <>(philosopher[0]@cs), es decir, que eventualmente se
+ejecute la linea etiquetada con cs. Para generar la never claim, se niega, obteniendo:
+!<>(philosopher[0]@cs).
+
+Se crea el model checker con el comando spin -a -m70000 -f '!<>(philosopher[0]@cs)' algoritmo2.pml
+Se genera el fichero pan con el comando gcc -o pan pan.c
+Y se ejecuta con ./pan -m70000
+
+En este caso, no se reporta ningún error. Por tanto se entiende que spin no encuentra ningún
+contraejemplo.
+
+Por último, para comprobar que este filósofo pudiera comer tantas veces como le plazca,
+se puede usar la siguiente safe condition: []<>(philosopher[0]@cs), es decir, que el 
+philosopher[0] siempre acaba por ejecutar la linea etiquetada por cs.
+
+Por tanto, la never claim sería: ![]<>(philosopher[0]@cs)
+
+Creamos por tanto el model checker: spin -a -m70000 -f '![]<>(philosopher[0]@cs)' algoritmo2.pml
+Se genera el fichero pan con el comando gcc -o pan pan.c
+Y se ejecuta con ./pan -m1000000 
+
+Spin tampoco detecta ningún error para este caso.
+
+Se puede afirmar portanto que no hay inanición
 
 ***********************FIN_ABSENSE_OF_STARVATION********************************
