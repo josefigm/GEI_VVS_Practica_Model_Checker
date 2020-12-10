@@ -184,13 +184,10 @@ interbloqueo
 Para verificar la exclusión se usará una fórmula LTL de seguridad, es decir, una fórmula
 que si se cumple verifica que el programa está bien. En este caso al querer
 comprobar que no puede ser que dos filósofos coman al mismo tiempo, la 
-fórmula LTL de seguridad sería la siguiente: []!(P@cs && Q@cs), en donde
-P y Q son filósofos y cs es una etiqueta que referencia a la linea 38 del
-algoritmo 1. Se leeria como: "Siempre se debe de cumplir que P y Q no ejecutan
-al mismo tiempo la linea etiquetada con cs".
-
-Ahora, para poder verificarlo, se debe de adaptar el código para que se creen solo
-dos filósofos P y Q (con 2 basta). (codigo algoritmo1_mutual_exclusion.pml)
+fórmula LTL de seguridad sería la siguiente: []!(philosopher[0]@cs && philosopher[1]@cs), en donde
+philosopher[0] y philosopher[1] son filósofos y cs es una etiqueta que referencia a la linea 35 del
+algoritmo 1. Se leeria como: "Siempre se debe de cumplir que philosopher[0] y 
+philosopher[1] no ejecutan al mismo tiempo la linea etiquetada con cs".
 
 Spin necesitará una never claim, es decir, una condición que especifique un comportamiento 
 imposible.
@@ -200,25 +197,34 @@ Al negar nuestra fórmula de seguridad nos queda lo siguiente:
 - ![] equivale a <>
 - !!(P@cs && Q@cs) equivale a (P@cs && Q@cs)
 
-El resultado es igual a: <>(P@cs && Q@cs). Este se leeria como "Con el tiempo se cumple que P y Q
-ejecutan la linea etiquetada con cs" y, efectivamente, esto es un comportamiento
-imposible.
+El resultado es igual a: <>(P@cs && Q@cs). Este se leeria como "Con el tiempo se cumple que 
+philosopher[0] y philosopher[1] ejecutan la linea etiquetada con cs" y, efectivamente, esto es 
+un comportamiento imposible.
 
-Se lanza el comando spin -a -f '<>(P@cs && Q@cs)' algoritmo1_mutual_exclusion.pml
+Se lanza el comando spin -a -f '<>(philosopher[0]@cs && philosopher[1]@cs)' -m70000 algoritmo1.pml
 gcc -o pan -DSAFETY pan.c
 ./pan -E (-E para evitar ver errores relacionados con deadlock)
 
 Al ejecutar pan, se observa que la condicion LTL se viola y que por tanto existe un estado
-dentro de arbol que genera spin en donde P y Q están ejecutando la linea etiquetada con cs.
-Ademas, genera el fichero de trail, en donde se podrá ver con detalle el contraejemplo:
+dentro de arbol que genera spin en donde philosopher[0] y philosopher[1] están ejecutando la
+linea etiquetada con cs. Ademas, genera el fichero de trail, en donde se podrá ver con detalle
+el contraejemplo:
 
-Para verlo, basta con ejecutar spin -t -p algoritmo1_mutual_exclusion.pml
+Para verlo, basta con ejecutar spin -t -p algoritmo1.pml
 
-101:    proc  1 (Q:1) algoritmo1_mutual_exclusion.pml:49 (state 8)
-101:    proc  0 (P:1) algoritmo1_mutual_exclusion.pml:35 (state 8)
+Al final de la simulación guiada, se imprime por consola lo siguiente:
 
-En el paso 101 el fichero trail muestra como ambos procesos están en la 
-linea etiquetada con cs.
+8039:   proc  4 (philosopher:1) algoritmo1.pml:35 (state 8)
+8039:   proc  3 (philosopher:1) algoritmo1.pml:15 (state 7)
+8039:   proc  2 (philosopher:1) algoritmo1.pml:15 (state 4)
+8039:   proc  1 (philosopher:1) algoritmo1.pml:35 (state 8)
+8039:   proc  0 (philosopher:1) algoritmo1.pml:35 (state 8
+
+En el paso 8039 el fichero trail muestra como ambos procesos philosopher[0] (proc 0) y
+philosopher[1] (proc 1) están en la linea etiquetada con cs. Pero no solo eso, sino que
+hay un tercer proceso que también está en la linea etiquetada por cs, proc 4.
+
+Por tanto se incumple la exclusión mutua.
 
 ***************************FIN_MUTUAL_EXCLUSION********************************
 
