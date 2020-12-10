@@ -1,0 +1,139 @@
+Autor: José Antonio Figueiras Martínez
+
+
+
+*********************************************************
+*                                                       *
+*                       Algoritmo 3                     *
+*                                                       *                                                
+*********************************************************
+
+Se realiza la ejecución del algoritmo 3, siendo N (número de filósofos) igual
+a 5 con el comando spin - u50 algoritmo3.pml. (para limitar el numero de
+instrucciones a 50 se usa el comando -u50)
+
+De esta ejecución se comprueba el resultado esperado: los filósofos se turnan
+para comer en orden. La salida es la siguiente:
+
+********************************SALIDA_CONSOLA_1*********************************
+                      4 is thinking
+0 is thinking
+3 is thinking
+1 is thinking
+2 is thinking
+0 is eating     <----- El filósofo 0 come
+1 is eating     <----- El filósofo 1 come
+1 is thinking
+0 is thinking
+2 is eating     <----- El filósofo 2 come
+3 is eating     <----- El filósofo 3 come
+2 is thinking
+3 is thinking
+4 is eating     <----- El filósofo 4 come
+4 is thinking
+0 is eating     <----- El filósofo 0 come
+1 is eating     <----- El filósofo 1 come
+1 is thinking
+2 is eating     <----- El filósofo 2 come
+2 is thinking
+0 is thinking
+3 is eating     <----- El filósofo 3 come
+3 is thinking
+---------------
+depth-limit (-u50 steps) reached
+#processes: 5
+                turn = 4
+ 50:    proc  4 (philosopher:1) algoritmo3.pml:12 (state 2)
+ 50:    proc  3 (philosopher:1) algoritmo3.pml:12 (state 2)
+ 50:    proc  2 (philosopher:1) algoritmo3.pml:12 (state 2)
+ 50:    proc  1 (philosopher:1) algoritmo3.pml:12 (state 2)
+ 50:    proc  0 (philosopher:1) algoritmo3.pml:12 (state 2)
+5 processes created
+
+
+********************************SALIDA_CONSOLA_1*********************************
+
+**********************************DEADLOCK*************************************
+
+De este algoritmo se puede razonar que no presenta el problema de los
+interbloqueos. Es imposible que varios procesos compartan pid y que, por tanto
+puedan continuar la ejecución al comprobar la condicion turn=_pid y que llegen a 
+bloquearse de manera recíproca, ya que solo un proceso tendrá el control de la
+variable general turn.
+
+Para verificar si existen interbloqueos, se crea el verificador con el 
+comando  spin -search algoritmo3.pml. 
+
+La ejecución del archivo pan, que genera de manera inmediata, delata la ausencia
+de errores, por lo que tampoco se genera un archivo de trail.
+
+Se puede afirmar luego de verificarlo que este algoritmo no presenta interbloqueos.
+
+*********************************FIN_DEADLOCK**********************************
+
+
+*******************************MUTUAL_EXCLUSION********************************
+
+De manera similar a lo razonado anteriormente, gracias a la condición turn=_pid
+se puede razonar que es imposible que varios filósofos evaluen como cierta
+dicha condición, pues los pid son únicos. Solo un filósofo ejecutara la
+sección crítica.
+
+Para verificarlo, se ejecuta el mismo comando que en los algoritmos anteriores,
+y de nuevo, con la misma never claim que se deduce de la siguiente fórmula de
+seguridad: []!(P@cs && Q@cs).
+
+Al negar nuestra fórmula de seguridad nos queda lo siguiente:
+
+- ![] equivale a <>
+- !!(P@cs && Q@cs) equivale a (P@cs && Q@cs)
+
+El resultado es igual a: <>(P@cs && Q@cs).
+
+Se lanza el comando spin -a -f '<>(philosopher[0]@cs && philosopher[1]@cs)' algoritmo3.pml
+gcc -o pan -DSAFETY pan.c
+./pan -E -m70000 (-E para evitar ver errores relacionados con deadlock)
+
+Al final de la ejecución de la simulación guiada del archivo trail se verifica que
+existen 0 errores y que por tanto, no se encuentra un contraejemplo y que por tanto es
+imposible que dos procesos entren a la sección crítica al mismo tiempo.
+
+***************************FIN_MUTUAL_EXCLUSION********************************
+
+***************************ABSENSE_OF_STARVATION********************************
+
+De nuevo, si se razona el algoritmo, se puede decir que no debe de haber
+inanición, pues gracias a que todos los filósofos se turnan, todos acabarán
+comiendo. Ademas, al turnarse de manera fija, acabarán comiendo el mismo número
+de veces
+
+Para verificar lo razonado se procede a ejecutar una verificación con la ayuda
+de una fórmula LTL. Para realizarlo, bastará con comprobarlo para un filósofo. 
+En este caso, al igual que para el algoritmo2, se realizará con philosopher[0].
+
+La fórmula de seguridad será: <>(philosopher[0]@cs), es decir, que eventualmente se
+ejecute la linea etiquetada con cs. Para generar la never claim, se niega, obteniendo:
+!<>(philosopher[0]@cs).
+
+- Se crea por tanto el model checker con el comando spin -a -f '!<>(philosopher[0]@cs)' algoritmo3.pml
+- Se genera el fichero pan con el comando gcc -o pan pan.c
+- Y se ejecuta con ./pan -m70000
+
+En este caso, no se reporta ningún error. Por tanto se entiende que spin no encuentra ningún
+contraejemplo.
+
+Por último, para comprobar que este filósofo pudiera comer tantas veces como le plazca,
+se puede usar la siguiente safe condition: []<>(philosopher[0]@cs), es decir, que el 
+philosopher[0] siempre acaba por ejecutar la linea etiquetada por cs.
+
+Por tanto, la never claim sería: ![]<>(philosopher[0]@cs)
+
+Creamos por tanto el model checker: spin -a -f '![]<>(philosopher[0]@cs)' algoritmo3.pml
+Se genera el fichero pan con el comando gcc -o pan pan.c
+Y se ejecuta con ./pan -m1000000 
+
+Spin tampoco detecta ningún error para este caso.
+
+Se puede afirmar portanto que no hay inanición
+
+***********************FIN_ABSENSE_OF_STARVATION********************************

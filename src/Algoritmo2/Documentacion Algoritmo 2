@@ -41,7 +41,7 @@ Al negar nuestra fórmula de seguridad nos queda lo siguiente:
 
 El resultado es igual a: <>(P@cs && Q@cs).
 
-Se lanza el comando spin -a -f '<>(philosopher[0]@cs && philosopher[1]@cs)' -m70000 algoritmo2.pml
+Se lanza el comando spin -a -f '<>(philosopher[0]@cs && philosopher[1]@cs)' algoritmo2.pml
 gcc -o pan -DSAFETY pan.c
 ./pan -E -m70000 (-E para evitar ver errores relacionados con deadlock)
 
@@ -70,7 +70,7 @@ también estña ejecutando dicha linea. Por tanto, se incumple la exclusión mut
 
 ***************************ABSENSE_OF_STARVATION********************************
 
-En este caso, no se puede dar por sentado que hai inanición, pues el algoritmo2
+En este caso, no se puede dar por sentado que hay inanición, pues el algoritmo2
 no presenta deadlocks.
 
 Para verificarlo, se debe de obtener un model checker que utilice una never claim
@@ -81,7 +81,7 @@ La fórmula de seguridad sería: <>(philosopher[0]@cs), es decir, que eventualme
 ejecute la linea etiquetada con cs. Para generar la never claim, se niega, obteniendo:
 !<>(philosopher[0]@cs).
 
-Se crea el model checker con el comando spin -a -m70000 -f '!<>(philosopher[0]@cs)' algoritmo2.pml
+Se crea el model checker con el comando spin -a -f '!<>(philosopher[0]@cs)' algoritmo2.pml
 Se genera el fichero pan con el comando gcc -o pan pan.c
 Y se ejecuta con ./pan -m70000
 
@@ -94,7 +94,7 @@ philosopher[0] siempre acaba por ejecutar la linea etiquetada por cs.
 
 Por tanto, la never claim sería: ![]<>(philosopher[0]@cs)
 
-Creamos por tanto el model checker: spin -a -m70000 -f '![]<>(philosopher[0]@cs)' algoritmo2.pml
+Creamos por tanto el model checker: spin -a -f '![]<>(philosopher[0]@cs)' algoritmo2.pml
 Se genera el fichero pan con el comando gcc -o pan pan.c
 Y se ejecuta con ./pan -m1000000 
 

@@ -15,130 +15,130 @@ Se obtiene la siguiente salida:
 
 
 ********************************SALIDA_CONSOLA_1*********************************
-      0 is thinking
-          1 is thinking
-                      4 is thinking
-                  3 is thinking
-              2 is thinking
-      0 is eating
-      0 is thinking
-                      4 is eating
-                      4 is thinking
-      0 is eating
-                  3 is eating
-      0 is thinking
-                  3 is thinking
-              2 is eating
-                      4 is eating
-      0 is eating
-      0 is thinking
-                      4 is thinking
-      0 is eating
-              2 is thinking
-          1 is eating
-                  3 is eating       
-                      4 is eating
-      0 is thinking
-                  3 is thinking
-          1 is thinking
-              2 is eating
-                      4 is thinking
-              2 is thinking
-          1 is eating
-          1 is thinking
-      0 is eating
-      0 is thinking
-                      4 is eating
-                      4 is thinking
-      0 is eating
-      0 is thinking
-                  3 is eating
-                      4 is eating
-                  3 is thinking
-              2 is eating
-                      4 is thinking
-              2 is thinking
-      0 is eating
-          1 is eating
-      0 is thinking
-          1 is thinking
-                      4 is eating
-          1 is eating
-      0 is eating
-          1 is thinking
-                  3 is eating
-                      4 is thinking
-      0 is thinking
-                  3 is thinking
-          1 is eating
-              2 is eating
-                      4 is eating
-              2 is thinking
-          1 is thinking
-                  3 is eating
-                  3 is thinking
-                      4 is thinking
-      0 is eating
-                      4 is eating
-              2 is eating
-              2 is thinking
-      0 is thinking
-              2 is eating
-          1 is eating
-      0 is eating
-              2 is thinking
-      0 is thinking
-                  3 is eating
-                      4 is thinking
-          1 is thinking
-              2 is eating
-      0 is eating
-                  3 is thinking
-                      4 is eating
-                      4 is thinking
-              2 is thinking
-      0 is thinking
-          1 is eating
-      0 is eating
-              2 is eating
-          1 is thinking
-      0 is thinking
-              2 is thinking
-          1 is eating
-                      4 is eating
-      0 is eating
-          1 is thinking
-      0 is thinking
-              2 is eating
-                      4 is thinking
-                  3 is eating
-          1 is eating
-              2 is thinking
-                  3 is thinking
-              2 is eating
-          1 is thinking
-      0 is eating
-      0 is thinking
-              2 is thinking
-                      4 is eating
-      0 is eating
-              2 is eating
-                  3 is eating
-                      4 is thinking
-      0 is thinking
-          1 is eating
-              2 is thinking
-          1 is thinking
-      0 is eating
-                  3 is thinking
-      0 is thinking
-      timeout
+0 is thinking
+1 is thinking
+4 is thinking
+3 is thinking
+2 is thinking
+0 is eating
+0 is thinking
+4 is eating
+4 is thinking
+0 is eating
+3 is eating
+0 is thinking
+3 is thinking
+2 is eating
+4 is eating
+0 is eating
+0 is thinking
+4 is thinking
+0 is eating
+2 is thinking
+1 is eating
+3 is eating       
+4 is eating
+0 is thinking
+3 is thinking
+1 is thinking
+2 is eating
+4 is thinking
+2 is thinking
+1 is eating
+1 is thinking
+0 is eating
+0 is thinking
+4 is eating
+4 is thinking
+0 is eating
+0 is thinking
+3 is eating
+4 is eating
+3 is thinking
+2 is eating
+4 is thinking
+2 is thinking
+0 is eating
+1 is eating
+0 is thinking
+1 is thinking
+4 is eating
+1 is eating
+0 is eating
+1 is thinking
+3 is eating
+4 is thinking
+0 is thinking
+3 is thinking
+1 is eating
+2 is eating
+4 is eating
+2 is thinking
+1 is thinking
+3 is eating
+3 is thinking
+4 is thinking
+0 is eating
+4 is eating
+2 is eating
+2 is thinking
+0 is thinking
+2 is eating
+1 is eating
+0 is eating
+2 is thinking
+0 is thinking
+3 is eating
+4 is thinking
+1 is thinking
+2 is eating
+0 is eating
+3 is thinking
+4 is eating
+4 is thinking
+2 is thinking
+0 is thinking
+1 is eating
+0 is eating
+2 is eating
+1 is thinking
+0 is thinking
+2 is thinking
+1 is eating
+4 is eating
+0 is eating
+1 is thinking
+0 is thinking
+2 is eating
+4 is thinking
+3 is eating
+1 is eating
+2 is thinking
+3 is thinking
+2 is eating
+1 is thinking
+0 is eating
+0 is thinking
+2 is thinking
+4 is eating
+0 is eating
+2 is eating
+3 is eating
+4 is thinking
+0 is thinking
+1 is eating
+2 is thinking
+1 is thinking
+0 is eating
+3 is thinking
+0 is thinking
+timeout             <----- Linea destacada      
 #processes: 5
-                onTable[0] = 0
-                onTable[1] = 0
-                onTable[2] = 0
-                onTable[3] = 0
-                onTable[4] = 0
+onTable[0] = 0
+onTable[1] = 0
+onTable[2] = 0
+onTable[3] = 0
+onTable[4] = 0
 519:    proc  4 (philosopher:1) algoritmo1.pml:15 (state 7)
 519:    proc  3 (philosopher:1) algoritmo1.pml:15 (state 7)
 519:    proc  2 (philosopher:1) algoritmo1.pml:15 (state 7)
@@ -151,16 +151,16 @@ Se obtiene la siguiente salida:
 
 Si se observa el final de la salida, se ve que Spin genera un timeout. 
 Spin genera un timeout cuando todos los procesos carecen de una 
-siguiente instrucción a ejecutar, es decir, están esperando a que una condición
-se cumpla para poder continuar. Si ningún proceso puede hacer que esta
-condición se cumpla, Spin lo detecta y genera un timeout. En concreto,
-nuestros procesos son los filósofos, y la condición por la que pueden
+siguiente instrucción a ejecutar (están esperando a que una condición
+se cumpla para poder continuar) y ningún proceso puede hacer que esta
+condición se cumpla. Spin detecta esta situación y genera un timeout. En 
+concreto, los procesos son los filósofos, y la condición por la que pueden
 esperar es que alguno de los tenedores que necesiten esté en la mesa.
-El hecho de que se genere un timeout indica que todos los filósofos
-están esperando a que el tenedor que necesitan se libere. Por ello, se
-observa que hay un abrazo mortal o deadlock.
+El hecho de que se genere un timeout indica, en este caso, que todos los 
+filósofos están esperando a que el tenedor que necesitan se libere. Por ello,
+se observa que hay un abrazo mortal o deadlock.
 
-Para verificarlo, se realiza una búsqueda de interbloqueos ejecutando
+Para verificarlo con mayor detalle, se realiza una búsqueda de interbloqueos ejecutando
 el comando spin -search algoritmo1.pml. Al hacerlo, se genera un archivo
 algoritmo1.pml.trail, lo que indica que hay presencia de deadlock o algún
 incumplimiento de aserciónes. Para ejecutar este archivo, se lanza el comando
@@ -181,12 +181,21 @@ interbloqueo
 
 *******************************MUTUAL_EXCLUSION********************************
 
+Del algoritmo se puede razonar lo siguiente: es posible que un proceso entre a
+ejecutar la instrucción onTable[tenedor] != 0; y evaluar la expresión como verdadera
+y inmediatamente despues pierda la ejecución en favor de otro proceso adyacente. Ese 
+mismo proceso puede ejecutar esa misma linea y también evaluar la expresión como
+verdadera, es decir, ver el tenedor libre.
+ 
+Es por ello que se puede razonar que este algoritmo no garantizará la exclusión
+mutua y que varios filósofos adyacentes coman al mismo tiempo.
+
 Para verificar la exclusión se usará una fórmula LTL de seguridad, es decir, una fórmula
 que si se cumple verifica que el programa está bien. En este caso al querer
-comprobar que no puede ser que dos filósofos coman al mismo tiempo, la 
+comprobar que no puede ser que dos filósofos adyacentes coman al mismo tiempo, la 
 fórmula LTL de seguridad sería la siguiente: []!(philosopher[0]@cs && philosopher[1]@cs), en donde
-philosopher[0] y philosopher[1] son filósofos y cs es una etiqueta que referencia a la linea 35 del
-algoritmo 1. Se leeria como: "Siempre se debe de cumplir que philosopher[0] y 
+philosopher[0] y philosopher[1] son filósofos adyacentes y cs es una etiqueta que r
+eferencia a la linea 35 del algoritmo 1. Se leeria como: "Siempre se debe de cumplir que philosopher[0] y 
 philosopher[1] no ejecutan al mismo tiempo la linea etiquetada con cs".
 
 Spin necesitará una never claim, es decir, una condición que especifique un comportamiento 
@@ -201,9 +210,9 @@ El resultado es igual a: <>(P@cs && Q@cs). Este se leeria como "Con el tiempo se
 philosopher[0] y philosopher[1] ejecutan la linea etiquetada con cs" y, efectivamente, esto es 
 un comportamiento imposible.
 
-Se lanza el comando spin -a -f '<>(philosopher[0]@cs && philosopher[1]@cs)' -m70000 algoritmo1.pml
+Se lanza el comando spin -a -f '<>(philosopher[0]@cs && philosopher[1]@cs)' algoritmo1.pml
 gcc -o pan -DSAFETY pan.c
-./pan -E (-E para evitar ver errores relacionados con deadlock)
+./pan -E -m70000 (-E para evitar ver errores relacionados con deadlock)
 
 Al ejecutar pan, se observa que la condicion LTL se viola y que por tanto existe un estado
 dentro de arbol que genera spin en donde philosopher[0] y philosopher[1] están ejecutando la
@@ -222,7 +231,8 @@ Al final de la simulación guiada, se imprime por consola lo siguiente:
 
 En el paso 8039 el fichero trail muestra como ambos procesos philosopher[0] (proc 0) y
 philosopher[1] (proc 1) están en la linea etiquetada con cs. Pero no solo eso, sino que
-hay un tercer proceso que también está en la linea etiquetada por cs, proc 4.
+hay un tercer proceso que también es adyacente al filósofo 0 que está en la linea 
+etiquetada por cs, proc 4
 
 Por tanto se incumple la exclusión mutua.
 
@@ -230,9 +240,11 @@ Por tanto se incumple la exclusión mutua.
 
 ***************************ABSENSE_OF_STARVATION********************************
 
-Por último, el hecho de que haya la presencia de un deadlock significa
-que los filósofos no podrán comer cuanto quieran, pues estarán esperando
-infinitamente por su tenedor. Es por ello que se puede afirmar que este
-código tiene el problema de la inanición o starvation.
+El hecho de que haya la presencia de un deadlock significa que los filósofos
+no podrán comer cuanto quieran, pues estarán esperando
+infinitamente por su tenedor. 
+
+Es por ello que se puede afirmar que este código tiene el problema de la 
+inanición o starvation.
 
 ***********************FIN_ABSENSE_OF_STARVATION********************************
