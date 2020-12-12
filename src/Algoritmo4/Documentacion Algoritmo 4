@@ -1,32 +1,115 @@
 Autor: José Antonio Figueiras Martínez
 
+*******************************************************************************
+*                                                                             *
+*                                   Algoritmo 4                               *
+*                                                                             *                                                
+*******************************************************************************
 
-
-*********************************************************
-*                                                       *
-*                       Algoritmo 4                     *
-*                                                       *                                                
-*********************************************************
-
-Se realiza la ejecución del algoritmo 1, siendo N (número de filósofos) igual
-a 5 con el comando spin algoritmo1.pml.
-
-Se obtiene la siguiente salida:
-
-
-********************************SALIDA_CONSOLA_1*********************************
-
-********************************SALIDA_CONSOLA_1*********************************
-
+Por último, se realiza la ejecución del algoritmo 4, siendo N 
+(número de filósofos) igual a 5 con el comando spin algoritmo4.pml.
 
 **********************************DEADLOCK*************************************
+
+Se razona previamente lo siguiente: si un filósofo puede comer, entrará el solo
+a verificarlo gracias al mutex, evaluará la condición a verdadero, cambiará
+su estado y su posición semáforo y, posteriormente, liberará el mutex, 
+haciendo que otros filósofos puedan entrar. En el caso de que un filósofo
+no pueda comer, evaluará la condición a falso pero posteriormente 
+liberará el mutex y esperará a que se cambie su semáforo. El hecho de que
+evaluara la condición a falso implica que el filósofo adyacente que estaba
+comiendo eventualmente acabará cambiando su semáforo, haciendo que el 
+primero pueda comer. Por tanto, se puede ver como en ambos casos, no debe de
+aparecer el problema del interbloqueo. Siempre habrá un filósofo que, o bien
+liberará el mutex, o bien cambie el semáforo por el cual otro filósofo
+espera.
+
+Para verificar lo anteriormente expuesto, se prepara un model checker con
+el siguiente comando:  spin -search algoritmo4.pml.
+
+Al igual que en el algoritmo anterior, la ejecución del archivo pan que se 
+genera de manera inmediata delata la ausencia de errores.
+
+Ademas la búsqueda de los mismos se pudo simplificar, pues en la salida
+se indica que se ha aplicado la técnica de Partial Order Reduction, es decir,
+que en este algoritmo no influye el orden en el que los filósofos
+ejecuten las instrucciones, por lo que se selecciona un orden fijo.
+
+Por tanto, se puede afirmar que este algoritmo no presenta el problema del
+interbloqueo.
 
 *********************************FIN_DEADLOCK**********************************
 
 *******************************MUTUAL_EXCLUSION********************************
 
+El mutex realiza una función de vital importancia, pues impide
+que varios filósofos cogan los tenedores o los pongan en la mesa al mismo
+tiempo y, por tanto, también impide que varios filósofos comprueben al mismo 
+tiempo el estado en el que están sus filósofos adyacentes.
+
+Es decir, esto imposibilita que varios filósofos adyacentes vean en el
+mismo instante de tiempo el array de estados y que, por tanto, dos filósofos
+adyacentes puedan pensar que el filósofo de al lado no está comiendo. 
+
+Esto implica que será imposible que dos filósofos adyacentes acaben comiendo al
+mismo tiempo, pues el filósofo adyacente que entró antes ya habrá actualizado
+el array de estados en el momento en el que el otro haga la comprobación.
+
+Para verificarlo, se ejecuta el mismo comando que en los algoritmos anteriores,
+y de nuevo, con la misma never claim que se deduce de la siguiente fórmula de
+seguridad: []!(philosopher[0]@cs && philosopher[1]@cs).
+
+Al negar nuestra fórmula de seguridad nos queda lo siguiente:
+
+- ![] equivale a <>
+- !!(philosopher[0]@cs && philosopher[1]@cs) equivale a 
+    (philosopher[0]@cs && philosopher[1]@cs)
+
+El resultado es igual a: <>(philosopher[0]@cs && philosopher[1]@cs).
+
+Se lanzan los comandos:
+- spin -a -f '<>(philosopher[0]@cs && philosopher[1]@cs)' algoritmo4.pml
+- gcc -o pan -DSAFETY pan.c
+- ./pan -E -m70000 (-E para evitar ver errores relacionados con deadlock)
+
+Al final de la ejecución del verificador se verifica que existen 0 errores y 
+que por tanto, no se encuentra un contraejemplo.
+
+Eso implica que es imposible que dos procesos adyacentes entren a la sección
+crítica al mismo tiempo.
+
 ***************************FIN_MUTUAL_EXCLUSION********************************
 
-***************************ABSENSE_OF_STARVATION********************************
+***************************ABSENSE_OF_STARVATION*******************************
 
-***********************FIN_ABSENSE_OF_STARVATION********************************
+Para verificar la inanición se procede a ejecutar una verificación con la ayuda
+de una fórmula LTL. Para realizarlo, bastará con comprobarlo para un filósofo. 
+En este caso, al igual que para los dos algoritmos anteriores, 
+se realizará con philosopher[0].
+
+La fórmula de seguridad será: <>(philosopher[0]@cs), es decir, que 
+eventualmente se ejecute la linea etiquetada con cs. Para generar la never 
+claim, se niega, obteniendo: !<>(philosopher[0]@cs).
+
+- Se crea por tanto el model checker con el comando:
+  spin -a -f '!<>(philosopher[0]@cs)' algoritmo4.pml
+- Se genera el fichero pan con el comando gcc -o pan pan.c
+- Y se ejecuta con ./pan -a -f -m70000
+
+En este caso, se reporta un error. Para verlo en detalle, se ejecuta
+el comando spin -t -p algoritmo4.pml > salida
+
+Y en el fichero salida se ve lo siguiente:
+
+1020:	proc  4 (philosopher:1) algoritmo4.pml:41 (state 33)	[(1)]
+1022:	proc  4 (philosopher:1) algoritmo4.pml:41 (state 41)	[else]
+1024:	proc  4 (philosopher:1) algoritmo4.pml:41 (state 42)	[(1)]
+  <<<<<START OF CYCLE>>>>>  < LINEA DESTACADA
+1026:	proc  4 (philosopher:1) algoritmo4.pml:33 (state 46)	[mutex = 1]
+                          4 is thinking
+
+Que aparezca <<<<<START OF CYCLE>>>>> en la linea destaca significa que las
+transiciones que vienen a continuacion forman un ciclo, en el cual el filósofo
+0 no come. Por tanto eso significa que el 0 no comerá y que sucede inanición.
+
+***********************FIN_ABSENSE_OF_STARVATION*******************************

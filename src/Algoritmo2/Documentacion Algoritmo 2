@@ -1,12 +1,10 @@
 Autor: José Antonio Figueiras Martínez
 
-
-
-*********************************************************
-*                                                       *
-*                       Algoritmo 2                     *
-*                                                       *                                                
-*********************************************************
+*******************************************************************************
+*                                                                             *
+*                                   Algoritmo 2                               *
+*                                                                             *                                                
+*******************************************************************************
 
 Se realiza la ejecución del algoritmo 2, siendo N (número de filósofos) igual
 a 5 con el comando spin algoritmo2.pml.
@@ -14,11 +12,11 @@ a 5 con el comando spin algoritmo2.pml.
 
 **********************************DEADLOCK*************************************
 
-Aun que se indica que no hay interbloqueos, se realiza una búsqueda de interbloqueos ejecutando
-el comando spin -search algoritmo2.pml. 
+Aun que se indica que no hay interbloqueos, se realiza una búsqueda de 
+interbloqueos ejecutando el comando spin -search algoritmo2.pml. 
 
-Ni con la profundidad por defecto (10000 pasos) ni con la máxima soportada por la CPU
-se encuentran errores. (se probó con -m1000000)
+Ni con la profundidad por defecto (10000 pasos) ni con la máxima soportada por
+la CPU se encuentran errores. (se probó con -m1000000)
 
 *********************************FIN_DEADLOCK**********************************
 
@@ -26,29 +24,34 @@ se encuentran errores. (se probó con -m1000000)
 *******************************MUTUAL_EXCLUSION********************************
 
 
-Al igual que con el algoritmo 1, se usa una fórmula LTL de seguridad. La 
-fórmula LTL de seguridad sería la misma: []!(P@cs && Q@cs), en donde
-philosopher(0) y philosopher(1) son filósofos y cs es una etiqueta que
-referencia a la linea que nos interesa comprobar.
+Al igual que con el algoritmo 1, se usa una fórmula LTL de seguridad. La
+fórmula LTL de seguridad sería la misma: 
+[]!(philosopher[0]@cs && philosopher[1]@cs), en donde philosopher(0) y 
+philosopher(1) son filósofos adyacentes y cs es una etiqueta que referencia
+a la linea que nos interesa comprobar.
 
-Spin vuelve a necesitar una never claim, es decir, una condición que especifique un comportamiento 
-imposible.
+Spin vuelve a necesitar una never claim, es decir, una condición que 
+especifique un comportamiento imposible.
 
 Al negar nuestra fórmula de seguridad nos queda lo siguiente:
 
 - ![] equivale a <>
-- !!(P@cs && Q@cs) equivale a (P@cs && Q@cs)
+- !!(philosopher[0]@cs && philosopher[1]@cs) equivale a:
+  (philosopher[0]@cs && philosopher[1]@cs)
 
-El resultado es igual a: <>(P@cs && Q@cs).
+El resultado es igual a: <>(philosopher[0]@cs && philosopher[1]@cs).
 
-Se lanza el comando spin -a -f '<>(philosopher[0]@cs && philosopher[1]@cs)' algoritmo2.pml
-gcc -o pan -DSAFETY pan.c
-./pan -E -m70000 (-E para evitar ver errores relacionados con deadlock)
+Se lanzan los comandos:
+- spin -a -f '<>(philosopher[0]@cs && philosopher[1]@cs)' algoritmo2.pml
+- gcc -o pan -DSAFETY pan.c 
+- ./pan -E -m70000 (-E para evitar ver errores relacionados con deadlock)
 
-Al ejecutar pan, se observa que la condicion LTL se viola y que por tanto existe un estado
-dentro de arbol que genera spin en donde philosopher[0] y philosopher[1] están ejecutando 
-la linea etiquetada con cs. Ademas, genera el fichero de trail, 
-en donde se podrá ver con detalle el contraejemplo:
+Al ejecutar pan, se observa que la condicion LTL se viola y que por tanto 
+existe un estado dentro de arbol que genera spin en donde philosopher[0] y 
+philosopher[1] están ejecutando la linea etiquetada con cs. 
+
+Ademas, se genera el fichero de trail, en donde se podrá ver con detalle el 
+contraejemplo:
 
 Para verlo, basta con ejecutar spin -t -p algoritmo2.pml
 
@@ -60,46 +63,47 @@ Al final de la simulación guiada, se imprime por consola lo siguiente:
 16987:  proc  1 (philosopher:1) algoritmo2.pml:41 (state 8)
 16987:  proc  0 (philosopher:1) algoritmo2.pml:41 (state 8)
 
-En el paso 16987 el fichero trail muestra como efectivamente el philosopher[0](proc 0)
-y el philosopher[1](proc 1) están ejecutando la linea 41 del algoritmo2, que se corres-
-ponde con la linea etiquetada con cs. Inclusive el filósofo que corresponde a proc 4
-también estña ejecutando dicha linea. Por tanto, se incumple la exclusión mutua.
+En el paso 16987 el fichero trail muestra como efectivamente el philosopher[0]
+(proc 0) y el philosopher[1](proc 1) están ejecutando la linea 41 del 
+algoritmo2, que se corresponde con la linea etiquetada con cs. Inclusive el 
+filósofo que corresponde a proc 4 (adyacente al 0) también está ejecutando 
+dicha linea. Por tanto, se incumple la exclusión mutua.
 
 
 ***************************FIN_MUTUAL_EXCLUSION********************************
 
-***************************ABSENSE_OF_STARVATION********************************
+***************************ABSENSE_OF_STARVATION*******************************
 
 En este caso, no se puede dar por sentado que hay inanición, pues el algoritmo2
 no presenta deadlocks.
 
-Para verificarlo, se debe de obtener un model checker que utilice una never claim
-que permita comprobar la ausencia de inanición. Para realizarlo, basta con comprobarlo
-para un filósofo. En este caso, se realizará con philosopher[0].
+Para verificarlo, se debe de obtener un model checker que utilice una never 
+claim que permita comprobar la ausencia de inanición. Para realizarlo, basta 
+con comprobarlo para un filósofo. En este caso se realizará con philosopher[0].
 
-La fórmula de seguridad sería: <>(philosopher[0]@cs), es decir, que eventualmente se
-ejecute la linea etiquetada con cs. Para generar la never claim, se niega, obteniendo:
-!<>(philosopher[0]@cs).
+La fórmula de seguridad sería: <>(philosopher[0]@cs), es decir, que 
+eventualmente se ejecute la linea etiquetada con cs. Para generar la never 
+claim, se niega, obteniendo: !<>(philosopher[0]@cs).
 
-Se crea el model checker con el comando spin -a -f '!<>(philosopher[0]@cs)' algoritmo2.pml
+Se crea el model checker con el comando:
+spin -a -f '!<>(philosopher[0]@cs)' algoritmo2.pml
 Se genera el fichero pan con el comando gcc -o pan pan.c
-Y se ejecuta con ./pan -m70000
+Y se ejecuta con ./pan -a -f -m70000
 
-En este caso, no se reporta ningún error. Por tanto se entiende que spin no encuentra ningún
-contraejemplo.
+En este caso, se reporta un error. Para verlo en detalle, se ejecuta
+el comando spin -t -p algoritmo2.pml > salida
 
-Por último, para comprobar que este filósofo pudiera comer tantas veces como le plazca,
-se puede usar la siguiente safe condition: []<>(philosopher[0]@cs), es decir, que el 
-philosopher[0] siempre acaba por ejecutar la linea etiquetada por cs.
+Y en el fichero salida se ve lo siguiente:
 
-Por tanto, la never claim sería: ![]<>(philosopher[0]@cs)
+5708:	proc  3 (philosopher:1) algoritmo2.pml:41 (state 8)	[printf('%d is eating\\n',_pid)]
+5710:	proc  3 (philosopher:1) algoritmo2.pml:25 (state 9)	[onTable[((_pid+1)%5)] = 1]
+5712:	proc  1 (philosopher:1) algoritmo2.pml:16 (state 2)	[((onTable[minor_fork]!=0))]
+  <<<<<START OF CYCLE>>>>> <--- LINEA DESTACADA
+5714:	proc  3 (philosopher:1) algoritmo2.pml:25 (state 11)	[onTable[_pid] = 1]
+                      3 is thinking
 
-Creamos por tanto el model checker: spin -a -f '![]<>(philosopher[0]@cs)' algoritmo2.pml
-Se genera el fichero pan con el comando gcc -o pan pan.c
-Y se ejecuta con ./pan -m1000000 
+Esa linea <<<<<START OF CYCLE>>>>> significa que las transiciones que vienen a
+continuacion forman un ciclo, en el cual el filósofo 0 no come. Por tanto eso
+significa que el 0 no comerá y que sucede inanición.
 
-Spin tampoco detecta ningún error para este caso.
-
-Se puede afirmar portanto que no hay inanición
-
-***********************FIN_ABSENSE_OF_STARVATION********************************
+***********************FIN_ABSENSE_OF_STARVATION*******************************
